@@ -279,7 +279,7 @@
         <dependency>
             <groupId>org.pentaho.di.plugins</groupId>
             <artifactId>pdi-engine-configuration-impl</artifactId>
-            <version>8.3.0.7-683</version>
+            <version>8.3.0.18-1112</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
