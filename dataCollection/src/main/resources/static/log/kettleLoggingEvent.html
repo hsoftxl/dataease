@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>实时日志</title>
+</head>
+<style>
+    body {
+        background-color: #000;
+        margin: 0px;
+        padding: 0px;
+        color: rgb(0, 198, 83);
+        font-size: 14px;
+    }
+
+    .window {
+        border: 2px #ccc outset;
+        width: 100%;
+        height: 420px;
+        background-color: rgb(20, 23, 41);
+        margin: 10px auto;
+        overflow: hidden;
+    }
+
+    .title {
+        background-color: #fff;
+        padding: 2px;
+        color: #000;
+    }
+
+    #messages {
+        background-color: rgb(20, 23, 41);
+        border-top: #ccc outset 2px;
+        height: 420px;
+        overflow-y: scroll;
+        padding: 5px;
+    }
+
+    ul {
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+    }
+
+    input {
+        background-color: #000;
+        border: 0;
+        color: #fff;
+        outline: none;
+        /*font-size:12px;*/
+        width: 100%;
+    }
+</style>
+<body>
+
+<div id="messages"></div>
+</body>
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+<script src="../js/common.js"></script>
+<script>
+    window.getUrlParams = function (key) {
+        //获取url参数
+        var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)", "i");
+        var url = decodeURI(window.location.search)
+        var r = url.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+    var transID = getUrlParams('transID');
+    //alert(transID);
+    var socket;
+    openSocket();
+
+    function openSocket() {
+        if (typeof (WebSocket) == "undefined") {
+            console.log("您的浏览器不支持WebSocket");
+        } else {
+            console.log("您的浏览器支持WebSocket");
+            //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
+            //等同于socket = new WebSocket("ws://localhost:8888/xxxx/im/25");
+            //var socketUrl="${request.contextPath}/im/"+$("#userId").val();
+            //后续将这一块改为通过transID来获取日志
+            var socketUrl = BASE_URL + "/imserver/" + transID;
+            socketUrl = socketUrl.replace("https", "ws").replace("http", "ws");
+            console.log(socketUrl);
+            if (socket != null) {
+                socket.close();
+                socket = null;
+            }
+            socket = new WebSocket(socketUrl);
+            //打开事件
+            socket.onopen = function () {
+                console.log("websocket已打开");
+                //socket.send("这是来自客户端的消息" + location.href + new Date());
+            };
+            //获得消息事件
+            socket.onmessage = function (msg) {
+                document.getElementById('messages').innerHTML
+                    += '<br />' + msg.data;
+
+                //console.log(msg.data);
+                //发现消息进入    开始处理前端触发逻辑
+            };
+            //关闭事件
+            socket.onclose = function () {
+                console.log("websocket已关闭");
+            };
+            //发生了错误事件
+            socket.onerror = function () {
+                console.log("websocket发生了错误");
+            }
+        }
+    }
+
+    function sendMessage() {
+        if (typeof (WebSocket) == "undefined") {
+            console.log("您的浏览器不支持WebSocket");
+        } else {
+            console.log("您的浏览器支持WebSocket");
+            //console.log('{"toUserId":"' + $("#toUserId").val() + '","contentText":"' + $("#contentText").val() + '"}');
+            //socket.send('{"toUserId":"' + $("#toUserId").val() + '","contentText":"' + $("#contentText").val() + '"}');
+        }
+    }
+
+</script>
+
+</html>
